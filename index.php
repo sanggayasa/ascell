@@ -19,6 +19,45 @@
   <link href="css/sb-admin-2.min.css" rel="stylesheet">
 
 </head>
+<?php
+if (isset($_COOKIE['id']) && isset($_COOKIE['key'])) {
+  $id  = $_COOKIE['id'];
+  $key = $_COOKIE['key'];
+  include 'koneksi2.php';
+  $query = mysql_query("SELECT username FROM admin WHERE username = '$id' ");
+  $row = mysql_fetch_assoc($query);
+  if (hash('sha384', $row['username']) == $key) {
+    $_SESSION['id'] = true;
+  }
+}
+if (isset($_SESSION['id'])) {
+
+  $_SESSION['hak'] = $hak['hak'];
+  $_SESSION['username'] = $username;
+  $_SESSION['status'] = "login";
+  header("location: dashboard.php");
+  exit;
+}
+if (isset($_GET['pesan'])) {
+  if ($_GET['pesan'] == "gagal") {
+    echo "Login gagal! username dan password salah!";
+  } else if ($_GET['pesan'] == "tersisa") {
+
+    echo "tersisa 1 lagi";
+  } else if ($_GET['pesan'] == "tersisa0") {
+    echo "tersisa 0 lagi";
+  } else if ($_GET['pesan'] == "tersisa2") {
+    echo "tersisa 2 lagi";
+  } else if ($_GET['pesan'] == "blokir") {
+    header("location:blokir.php");
+  } else if ($_GET['pesan'] == "logout") {
+    echo "Anda telah berhasil logout";
+  } else if ($_GET['pesan'] == "belum_login") {
+    echo "Anda harus login untuk mengakses halaman admin";
+  };
+};
+
+?>
 
 <body class="bg-gradient-primary">
 
@@ -39,8 +78,8 @@
                   <div class="text-center">
                     <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
                   </div>
-                  <form class="user">
-                    <div class="form-group">
+                  <form class="user" action="cek_login.php" method="post">
+                    <!-- <div class="form-group">
                       <input type="email" class="form-control form-control-user" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Enter Email Address...">
                     </div>
                     <div class="form-group">
@@ -61,7 +100,23 @@
                     </a>
                     <a href="index.html" class="btn btn-facebook btn-user btn-block">
                       <i class="fab fa-facebook-f fa-fw"></i> Login with Facebook
-                    </a>
+                    </a> -->
+                    <form class="user" action="controller/login.php" method="post">
+                      <div class="form-group">
+                        <input type="text" name="username" class="form-control form-control-user" maxlength="15" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Enter Username..." required>
+                      </div>
+                      <div class="form-group">
+                        <input type="password" name="password" class="form-control form-control-user" id="exampleInputPassword" placeholder="Password" maxlength="15" required>
+                      </div>
+                      <div class="form-group">
+                        <div class="custom-control custom-checkbox small">
+                          <input type="checkbox" class="custom-control-input" id="customCheck" name="rememberme">
+                          <label class="custom-control-label" for="customCheck">Remember Me</label>
+                        </div>
+                      </div>
+                      <input type="submit" name="login" value="login" class="btn btn-primary btn-user btn-block">
+                      <hr>
+                    </form>
                   </form>
                   <hr>
                   <div class="text-center">
